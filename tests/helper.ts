@@ -7,7 +7,7 @@ export class TestHelper {
     public static API_BASE: string = 'http://localhost:4010';
     public static API_KEY: string = '123';
     public static TENANT_ID: string = '159bfd33-b9b7-f424-4755-c119b324591d';
-    public static API_VERSION: string = '2023-01-01';
+    public static API_VERSION: string = '2023-12-01';
 
     public static get defaultRequestOptionsBuilder(): RequestOptionsBuilder {
         return RequestOptions.newBuilder()
