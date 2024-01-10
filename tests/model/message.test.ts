@@ -115,6 +115,22 @@ test('statusを出力できる', () => {
     expect(message.status).toBe(value);
 });
 
+test('APIバージョン20230101ではisShortenClickedはnullが出力される', () => {
+    // APIバージョン2023-01-01ではnullが返ってくる
+    const value = null;
+    const message = new Message();
+    message.setProperty('is_shorten_clicked', value);
+    expect(message.isShortenClicked).toBe(value);
+});
+
+test('APIバージョン20231201ではisShortenClickedはbooleanが出力される', () => {
+    // APIバージョン2023-12-01ではbooleanが返ってくる
+    const value = true;
+    const message = new Message();
+    message.setProperty('is_shorten_clicked', value);
+    expect(message.isShortenClicked).toBeTruthy;
+});
+
 test('resultを出力できる', () => {
     const value = Result.Done;
     const message = new Message();
