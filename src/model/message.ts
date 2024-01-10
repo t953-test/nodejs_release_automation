@@ -70,6 +70,10 @@ export class Message extends Requestable {
         return this.getProperty('is_shorten');
     }
 
+    public get isShortenClicked(): boolean | null {
+        return this.getProperty('is_shorten_clicked');
+    }
+
     public get result(): Result {
         return this.getProperty('result');
     }
