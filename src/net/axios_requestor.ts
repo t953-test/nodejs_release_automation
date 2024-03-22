@@ -2,12 +2,14 @@ import * as os from 'os';
 import axios, { AxiosRequestConfig, AxiosResponse as _AxiosResponse } from 'axios';
 import { Config } from '../config.js';
 import { RequestOptions } from '../request_options.js';
+import { AxiosNoContentsResponse } from './axios_no_contents_response.js';
 import { AxiosResponse } from './axios_response.js';
 import { Response } from './response.interface.js';
 import { Requestor } from './requestor.interface.js';
 
 export class AxiosRequestor implements Requestor {
     protected static DEFAULT_USER_AGENT = 'Karaden/Node/';
+    protected static DEFAULT_MAX_REDIRECTA = 5;
 
     public invoke(
         method: string,
@@ -15,11 +17,14 @@ export class AxiosRequestor implements Requestor {
         contentType: string | null = null,
         params: any = null,
         data: any = null,
-        requestOptions: RequestOptions | null = null
+        requestOptions: RequestOptions | null = null,
+        isNoContents: boolean | null = false,
+        allowRedirects: boolean | null = true
     ): Promise<Response> {
         requestOptions = Config.asRequestOptions().merge(requestOptions);
         requestOptions.validate();
 
+        const maxRedirects = allowRedirects ? AxiosRequestor.DEFAULT_MAX_REDIRECTA : 0;
         const config: AxiosRequestConfig = {
             url: path,
             method: method,
@@ -35,8 +40,13 @@ export class AxiosRequestor implements Requestor {
             params: this.buildQuery(params),
             validateStatus: () => true,
             responseType: 'text',
+            maxRedirects: maxRedirects,
         };
-        return axios(config).then((response: _AxiosResponse) => new AxiosResponse(response, requestOptions!));
+        return axios(config).then((response: _AxiosResponse) =>
+            !isNoContents
+                ? new AxiosResponse(response, requestOptions!)
+                : new AxiosNoContentsResponse(response, requestOptions!)
+        );
     }
 
     protected buildQuery(params: any): URLSearchParams | undefined {

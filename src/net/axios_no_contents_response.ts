@@ -15,7 +15,7 @@ import { TooManyRequestsException } from '../exception/too_many_requests_excepti
 import { UnknownErrorException } from '../exception/unknown_error_exception.js';
 import { Response } from './response.interface.js';
 
-export class AxiosResponse implements Response {
+export class AxiosNoContentsResponse implements Response {
     protected static errorClasses: any[] = [
         BadRequestException,
         UnauthorizedException,
@@ -25,8 +25,9 @@ export class AxiosResponse implements Response {
         TooManyRequestsException,
     ];
 
-    protected _object: KaradenObject | null = null;
     protected _error: KaradenException | null = null;
+    protected _statusCode: number | null = null;
+    protected _headers: any | null = null;
 
     get isError(): boolean {
         return this.error !== null;
@@ -37,15 +38,15 @@ export class AxiosResponse implements Response {
     }
 
     get object(): KaradenObject | null {
-        return this._object;
+        throw new NotImplementationException();
     }
 
     get statusCode(): number | null {
-        throw new NotImplementationException();
+        return this._statusCode;
     }
 
     get headers(): any | null {
-        throw new NotImplementationException();
+        return this._headers;
     }
 
     public constructor(response: _AxiosResponse, requestOptions: RequestOptions) {
@@ -53,27 +54,25 @@ export class AxiosResponse implements Response {
     }
 
     public interpret(response: _AxiosResponse, requestOptions: RequestOptions) {
-        const statusCode = response.status;
-        const body = response.data;
-        let contents = null;
-        try {
-            contents = JSON.parse(body);
-        } catch (e) {
-            const headers = response.headers;
-            this._error = new UnexpectedValueException(statusCode, headers, body);
-            return;
-        }
-
-        const object = Utility.convertToKaradenObject(contents, requestOptions);
-        if (200 > statusCode || 400 <= statusCode) {
+        this._statusCode = response.status;
+        this._headers = response.headers;
+        if (400 <= this._statusCode) {
+            const body = response.data;
+            let contents = null;
+            try {
+                contents = JSON.parse(body);
+            } catch (e) {
+                const headers = response.headers;
+                this._error = new UnexpectedValueException(this._statusCode, headers, body);
+                return;
+            }
+            const object = Utility.convertToKaradenObject(contents, requestOptions);
             const headers = response.headers;
             this._error =
                 object.object == 'error'
-                    ? this.handleError(statusCode, headers, body, object as Error)
-                    : new UnexpectedValueException(statusCode, headers, body);
+                    ? this.handleError(this._statusCode, headers, body, object as Error)
+                    : new UnexpectedValueException(this._statusCode, headers, body);
         }
-
-        this._object = object;
     }
 
     protected handleError(
@@ -82,7 +81,7 @@ export class AxiosResponse implements Response {
         body: string,
         error: Error
     ): KaradenException {
-        const errorClass = AxiosResponse.errorClasses.find((klass: any) => klass.STATUS_CODE == statusCode);
+        const errorClass = AxiosNoContentsResponse.errorClasses.find((klass: any) => klass.STATUS_CODE == statusCode);
         return errorClass
             ? new errorClass(headers, body, error)
             : new UnknownErrorException(statusCode, headers, body, error);

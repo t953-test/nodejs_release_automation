@@ -8,6 +8,8 @@ export interface Requestor {
         contentType: string | null,
         params: any,
         data: any,
-        requestOptions: RequestOptions | null
+        requestOptions: RequestOptions | null,
+        isNoContents?: boolean | null,
+        allowRedirects?: boolean | null
     ): Promise<Response>;
 }
