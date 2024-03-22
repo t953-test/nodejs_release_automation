@@ -1,4 +1,7 @@
-import { KaradenObject, Utility, Message, RequestOptions } from '../src';
+import { KaradenObject, Utility, Message, RequestOptions, FileUploadFailedException } from '../src';
+import * as fs from 'fs/promises';
+import axios from 'axios';
+import * as MockAdapter from 'axios-mock-adapter';
 
 test('objectのフィールドが存在しない場合はKaradenObjectが返る', () => {
     const contents = JSON.parse(`{"test": "test"}`);
@@ -95,4 +98,55 @@ describe.each([
         expect(object.getProperty(key)[0]).toBeInstanceOf(expected);
         expect(object.getProperty(key)[0].getProperty(key)).toBe(value);
     });
+});
+
+test('指定のURLにfileパスのファイルをPUTメソッドでリクエストする', async () => {
+    const filename = 'filename';
+    const signedUrl = 'https://example.com/';
+    const file = Buffer.from('test');
+    jest.spyOn(fs, 'readFile').mockResolvedValue(file);
+    const mock = new MockAdapter(axios);
+    mock.onPut(signedUrl).replyOnce(200);
+
+    await Utility.putSignedUrl(signedUrl, filename);
+    expect(mock.history.put[0].method).toBe('put');
+    expect(mock.history.put[0].url).toBe(signedUrl);
+    expect(mock.history.put[0].headers!['Content-Type']).toBe('application/octet-stream');
+});
+
+test('レスポンスコードが200以外だとFileUploadFailedExceptionが発生する', async () => {
+    const filename = 'filename';
+    const signedUrl = 'https://example.com/';
+    const file = Buffer.from('test');
+    jest.spyOn(fs, 'readFile').mockResolvedValue(file);
+    const mock = new MockAdapter(axios);
+    mock.onPut(signedUrl).replyOnce(403);
+
+    await expect(Utility.putSignedUrl(signedUrl, filename)).rejects.toThrow(FileUploadFailedException);
+});
+
+test('例外が発生するとFileUploadFailedExceptionが発生する', async () => {
+    const filename = 'filename';
+    const signedUrl = 'https://example.com/';
+    jest.spyOn(fs, 'readFile').mockRejectedValue(new Error());
+    const mock = new MockAdapter(axios);
+    mock.onPut(signedUrl).replyOnce(200);
+
+    await expect(Utility.putSignedUrl(signedUrl, filename)).rejects.toThrow(FileUploadFailedException);
+});
+
+test('ContentTypeを指定できる', async () => {
+    const filename = 'filename';
+    const signedUrl = 'https://example.com/';
+    const contentType = 'text/csv';
+    const file = Buffer.from('test');
+    jest.spyOn(fs, 'readFile').mockResolvedValue(file);
+    const mock = new MockAdapter(axios);
+    mock.onPut(signedUrl).replyOnce(200);
+
+    await Utility.putSignedUrl(signedUrl, filename, contentType);
+
+    expect(mock.history.put[0].method).toBe('put');
+    expect(mock.history.put[0].url).toBe(signedUrl);
+    expect(mock.history.put[0].headers!['Content-Type']).toBe('text/csv');
 });

@@ -1,9 +1,9 @@
 import { RequestOptions } from './request_options.js';
 
 export class Config {
-    public static VERSION = '1.1.0';
+    public static VERSION = '1.2.0';
     public static DEFAULT_API_BASE = 'https://prg.karaden.jp/api';
-    public static DEFAULT_API_VERSION = '2023-12-01';
+    public static DEFAULT_API_VERSION = '2024-03-01';
 
     public static apiVersion = this.DEFAULT_API_VERSION;
     public static apiKey?: string;

@@ -58,8 +58,6 @@ const { Config, MessageCreateParams, Message } = require('karaden-prg-node');
 同一のプロセスで複数のキーを使用する必要がある場合、リクエスト毎にキーやテナントIDを設定することができます。
 
 ```javascript
-import { Config, MessageCreateParams, RequestOptions, Message } from 'karaden-prg-node';
-
 const params = MessageDetailParams.newBuilder()
     .withId('<メッセージID>')
     .build();
@@ -70,4 +68,17 @@ const requestOptions = RequestOptions.newBuilder()
     .build();
 
 Message.detail(params, requestOptions);
+```
+### タイムアウトについて
+通信をするファイルサイズや実行環境の通信速度によってはHTTP通信時にタイムアウトが発生する可能性があります。<br />
+何度も同じような現象が起こる際は、ファイルサイズの調整もしくは`RequestOptions`からタイムアウトの時間を増やして、再度実行してください。<br />
+```javascript
+const requestOptions = RequestOptions.newBuilder()
+    .withApiKey('<トークン>')
+    .withTenantId('<テナントID>')
+    .withConnectionTimeout(<ミリ秒>)
+    .withReadTimeout(<ミリ秒>)
+    .build();
+
+const bulkMessage = BulkMessageService.create('<ファイルパス>', requestOptions);
 ```
