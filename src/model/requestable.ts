@@ -18,4 +18,17 @@ export class Requestable extends KaradenObject {
             .invoke(method, path, contentType, params, data, requestOptions)
             .then((response: Response) => (response.isError ? Promise.reject(response.error!) : response.object!));
     }
+
+    public static async requestAndReturnResponseInterface(
+        method: string,
+        path: string,
+        contentType: string | null = null,
+        params: any = null,
+        data: any = null,
+        requestOptions: RequestOptions | null = null
+    ): Promise<Response> {
+        return this.requestor
+            .invoke(method, path, contentType, params, data, requestOptions, true, false)
+            .then((response: Response) => (response.isError ? Promise.reject(response.error!) : response!));
+    }
 }

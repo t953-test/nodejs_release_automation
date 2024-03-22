@@ -1,8 +1,12 @@
+import * as fs from 'fs/promises';
+import axios from 'axios';
 import { RequestOptions } from './request_options.js';
 import { KaradenObject } from './model/karaden_object.js';
+import { FileUploadFailedException } from './exception/file_upload_failed_exception.js';
 
 export class Utility {
     public static objectTypes: any;
+    public static readonly DEFAULT_CONNECTION_TIMEOUT = 30000;
 
     protected static hasProperty(contents: any, propertyName: string): boolean {
         return Object.getOwnPropertyNames(contents).some((value: string) => value == propertyName);
@@ -54,5 +58,34 @@ export class Utility {
 
     public static toISOString(date: Date): string {
         return date.toLocaleString('sv-SE', { timeZone: 'UTC' }).replace(' ', 'T') + 'Z';
+    }
+
+    public static putSignedUrl(
+        signedUrl: string,
+        filename: string,
+        contentType: string = 'application/octet-stream',
+        requestOptions: RequestOptions | null = null
+    ) {
+        return fs
+            .readFile(filename)
+            .then((file) =>
+                axios.put(signedUrl, file, {
+                    headers: {
+                        'Content-Type': contentType,
+                    },
+                    timeout: this.getTimeout(requestOptions),
+                })
+            )
+            .catch(() => {
+                throw new FileUploadFailedException();
+            });
+    }
+
+    public static async sleep(time: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, time * 1000));
+    }
+
+    public static getTimeout(requestOptions: RequestOptions | null = null): number {
+        return requestOptions?.connectionTimeout ? requestOptions.connectionTimeout : this.DEFAULT_CONNECTION_TIMEOUT;
     }
 }
