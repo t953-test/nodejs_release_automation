@@ -72,5 +72,10 @@
     "testMatch": [
       "**/tests/**/*.test.+(ts|js)"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/t953-test/nodejs_release_automation.git"
+  },
+  "homepage": "https://github.com/t953-test/nodejs_release_automation"
 }
