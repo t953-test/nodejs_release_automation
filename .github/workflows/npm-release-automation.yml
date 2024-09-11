@@ -6,9 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
-      id-token: write
     steps:
       - run: lsb_release -a
       - run: ls -a
@@ -19,4 +19,7 @@ jobs:
         with:
           node-version-file: 'package.json'
           registry-url: 'https://registry.npmjs.org'
-      - run: node --version
+      - run: npm install
+      - run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
