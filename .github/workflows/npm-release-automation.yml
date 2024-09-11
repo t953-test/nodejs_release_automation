@@ -1,0 +1,22 @@
+name: Publish Package to npmjs
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: lsb_release -a
+      - run: ls -a
+      - uses: actions/checkout@v4
+      - run: ls -a
+      - run: node --version
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+          registry-url: 'https://registry.npmjs.org'
+      - run: node --version
