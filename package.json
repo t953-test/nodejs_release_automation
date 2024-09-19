@@ -1,7 +1,7 @@
 {
   "name": "nodejs-release-automation",
   "version": "1.0.0",
-  "description": "Testing Node.js release automationtest",
+  "description": "Testing Node.js release automation",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "files": [
