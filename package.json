@@ -1,7 +1,7 @@
 {
-  "name": "karaden-prg-node",
-  "version": "1.2.0",
-  "description": "Node.js library for the Karaden API.",
+  "name": "nodejs-release-automation",
+  "version": "1.0.0",
+  "description": "Testing Node.js release automationtest",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "files": [
@@ -18,9 +18,9 @@
     "clean": "rm -rf cjs mjs types"
   },
   "author": {
-    "name": "cpaas-dev-admin-om",
-    "email": "cpaas-dev-admin-om@nttcoms.com",
-    "url": "https://github.com/karaden-prg/karaden-prg-node"
+    "name": "t953-test",
+    "email": "t953githubactions@gmail.com",
+    "url": "https://github.com/t953-test/nodejs_release_automation"
   },
   "license": "MIT",
   "devDependencies": {
@@ -72,5 +72,10 @@
     "testMatch": [
       "**/tests/**/*.test.+(ts|js)"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/t953-test/nodejs_release_automation.git"
+  },
+  "homepage": "https://github.com/t953-test/nodejs_release_automation"
 }
