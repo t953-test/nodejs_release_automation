@@ -17,6 +17,6 @@ jobs:
           node-version-file: 'package.json'
           registry-url: 'https://registry.npmjs.org'
       - run: npm install
-      - run: npm publish --provenance
+      - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
